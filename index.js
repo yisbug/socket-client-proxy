@@ -160,13 +160,13 @@ class Socket extends net.Socket {
         const bUsername = Buffer.from(this.proxyUsername);
         let bUser = Buffer.concat([Buffer.from([0x01, bUsername.length]), bUsername]);
         const bPassword = Buffer.from(this.proxyPassword);
-        bUser = Buffer.concat([bUser, [bPassword.length], bPassword]);
+        bUser = Buffer.concat([bUser, Buffer.from([bPassword.length]), bPassword]);
         this.write(bUser);
 
         this.once('data_tmp', authData => {
           if (authData.length !== 2)
             return reject(new Error('Unexpected number of bytes received.'));
-          if (authData[0] !== 0x02)
+          if (authData[0] !== 0x01)
             return reject(new Error(`Unexpected authentication method code: ${authData[0]}.`));
           if (authData[1] !== 0x00)
             return reject(
